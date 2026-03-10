@@ -1,0 +1,64 @@
+{
+  "erp_system": "Generic",
+  "data_model": "ap_open_invoices",
+  "report_format": false,
+  "transformation_variables": {
+    "required_columns": [
+      "DS002.F01",
+      "DS002.F02",
+      "DS002.F04",
+      "DS002.F05",
+      "DS002.F06",
+      "DS002.F07",
+      "DS002.F08",
+      "DS002.F09",
+      "DS002.F10",
+      "DS002.F11",
+      "DS002.F12",
+      "DS002.F13",
+      "DS002.F14"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "DS002.F07",
+      "DS002.F08",
+      "DS002.F14"
+    ],
+    "amount_columns": [
+      "DS002.F11",
+      "DS002.F12"
+    ],
+    "document_date": "DS002_F07",
+    "due_date": "DS002.F08",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID75_Generic/Transform_Generic_Serengeti_AP_ID75.py",
+  "_pipeline_id": "ID75"
+}

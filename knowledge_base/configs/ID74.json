@@ -1,0 +1,70 @@
+{
+  "erp_system": "Generic",
+  "data_model": "general_ledger_detail",
+  "report_format": false,
+  "transformation_variables": {
+    "required_columns": [
+      "DS001.F01",
+      "DS001.F02",
+      "DS001.F03",
+      "DS001.F05",
+      "DS001.F06",
+      "DS001.F07",
+      "DS001.F08",
+      "DS001.F09",
+      "DS001.F10",
+      "DS001.F11",
+      "DS001.F12",
+      "DS001.F13",
+      "DS001.F14",
+      "DS001.F15",
+      "DS001.F16",
+      "DS001.F17",
+      "DS001.F18",
+      "DS001.F19",
+      "DS001.F20"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "DS001.F06",
+      "DS001.F09"
+    ],
+    "amount_columns": [
+      "DS001.F12",
+      "DS001.F13",
+      "DS001.F17"
+    ],
+    "effective_date": "DS001.F06",
+    "posted_date": "DS001.F09",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID74_Generic/Transform_Generic_Serengeti_ID74.py",
+  "_pipeline_id": "ID74"
+}

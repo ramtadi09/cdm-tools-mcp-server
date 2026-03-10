@@ -1,0 +1,70 @@
+{
+  "erp_system": "SAP ERP Central Component (ECC)",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": null,
+    "report_format": true
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "CoCd",
+      "Account",
+      "DocumentNo",
+      "Pstng Date",
+      "Reference",
+      "Short Text",
+      "Entry Date",
+      "Type",
+      "Crcy",
+      "Amount in FC",
+      "Amount in LC",
+      "User name",
+      "Itm",
+      "Year",
+      "Period",
+      "D/C",
+      "BusA"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Pstng Date",
+      "Entry Date"
+    ],
+    "amount_columns": [
+      "Amount in FC",
+      "Amount in LC"
+    ],
+    "effective_date": "Pstng Date",
+    "posted_date": "Entry Date",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "D/C",
+      "credit_value": "H",
+      "valid_values": [
+        "H",
+        "S"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": true
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID21_SAP/Transform_SAP_ID21.py",
+  "_pipeline_id": "ID21"
+}

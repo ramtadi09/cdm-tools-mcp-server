@@ -1,0 +1,62 @@
+{
+  "erp_system": "Sage 50",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 0,
+    "report_format": true
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "Entity",
+      "N/C",
+      "Name",
+      "No",
+      "Date",
+      "Ref",
+      "Details",
+      "Debit",
+      "Credit",
+      "Type"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Date"
+    ],
+    "amount_columns": [
+      "Debit",
+      "Credit"
+    ],
+    "effective_date": "Date",
+    "posted_date": "",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "Debit",
+        "credit_column": "Credit",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID4_Sage/Transform_Sage_ID4.py",
+  "_pipeline_id": "ID4"
+}

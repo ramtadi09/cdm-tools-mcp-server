@@ -1,0 +1,77 @@
+{
+  "erp_system": "SAP_2",
+  "data_model": "general_ledger_detail",
+  "report_format": false,
+  "transformation_variables": {
+    "required_columns": [
+      "Company_Code",
+      "General_Ledger_Account",
+      "Accounting_Document_Number",
+      "Posting_Date_in_the_Document",
+      "Document_Header_Text",
+      "Item_Text",
+      "Day_On_Which_Accounting_Document_Was_Entered",
+      "Document_Type",
+      "Currency_Key",
+      "Amount_in_Document_Currency",
+      "Amount_in_Local_Currency",
+      "User_Name",
+      "Cost_Center",
+      "Fiscal_Period",
+      "Transaction_Code",
+      "Exchange_rate",
+      "Fiscal_Year",
+      "Number_of_Line_Item_Within_Accounting_Document",
+      "Debit_Credit_Indicator",
+      "Controlling_Area",
+      "Amount_in_Second_Local_Currency"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Posting_Date_in_the_Document",
+      "Day_On_Which_Accounting_Document_Was_Entered"
+    ],
+    "amount_columns": [
+      "Amount_in_Document_Currency",
+      "Amount_in_Local_Currency",
+      "Amount_in_Second_Local_Currency",
+      "Exchange_rate"
+    ],
+    "effective_date": "Posting_Date_in_the_Document",
+    "posted_date": "Day_On_Which_Accounting_Document_Was_Entered",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "Debit_Credit_Indicator",
+      "credit_value": "H",
+      "valid_values": [
+        "H",
+        "S"
+      ],
+      "columns_to_apply_to": [
+        "Amount_in_Document_Currency",
+        "Amount_in_Local_Currency",
+        "Amount_in_Second_Local_Currency"
+      ],
+      "transform_dc_indicators": true
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID24_SAP/Transform_SAP_ID24.py",
+  "_pipeline_id": "ID24"
+}

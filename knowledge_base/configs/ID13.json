@@ -1,0 +1,75 @@
+{
+  "erp_system": "Oracle E-Business Suite (EBS/e-BS)",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 4,
+    "report_format": true
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "Entidad Legal",
+      "Cuenta",
+      "Nombre Cta",
+      "ID Asiento",
+      "Fecha Registro",
+      "Nombre",
+      "Descripcion",
+      "Fecha Posteo",
+      "Categoria",
+      "Moneda",
+      "Debito Moneda Origen",
+      "Credito Moneda Origen",
+      "Debito Local",
+      "Credito Local",
+      "Registrado por",
+      "Linea",
+      "Origen",
+      "Combinatoria Cuentas",
+      "TC"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Fecha Registro",
+      "Fecha Posteo"
+    ],
+    "amount_columns": [
+      "Debito Moneda Origen",
+      "Credito Moneda Origen",
+      "Debito Local",
+      "Credito Local",
+      "TC"
+    ],
+    "effective_date": "Fecha Registro",
+    "posted_date": "Fecha Posteo",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "Debito Moneda Origen",
+        "credit_column": "Credito Moneda Origen",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "Debito Local",
+        "credit_column": "Credito Local",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID13_Oracle/Transform_Oracle_ID13.py",
+  "_pipeline_id": "ID13"
+}

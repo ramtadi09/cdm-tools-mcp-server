@@ -1,0 +1,75 @@
+{
+  "erp_system": "SAP ERP Central Component (ECC)",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 0,
+    "report_format": false
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "CoCd",
+      "G L acct",
+      "Doc no ",
+      "Pstng date",
+      "Document header text",
+      "Text",
+      "Entry dte",
+      "Doc  type",
+      "Curr ",
+      "Loc curr amount",
+      "User name",
+      "BA",
+      "Itm",
+      "Year",
+      "Fiscal period",
+      "Ld",
+      "Exch rate",
+      "Tcod",
+      "Cost ctr",
+      "D C"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Pstng date",
+      "Entry dte"
+    ],
+    "amount_columns": [
+      "Loc curr amount",
+      "Exch rate"
+    ],
+    "effective_date": "Pstng date",
+    "posted_date": "Entry dte",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "D C",
+      "credit_value": "H",
+      "valid_values": [
+        "H",
+        "S"
+      ],
+      "columns_to_apply_to": [
+        "Loc curr amount"
+      ],
+      "transform_dc_indicators": true
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID28_SAP/Transform_SAP_ID28.py",
+  "_pipeline_id": "ID28"
+}

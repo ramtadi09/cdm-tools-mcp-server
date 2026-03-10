@@ -1,0 +1,71 @@
+{
+  "erp_system": "SAP ERP Central Component (ECC)",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 0,
+    "report_format": false
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "Company Code",
+      "GL Code",
+      "Act Doc No",
+      "Act Doc Posting Date",
+      "Doc Header Text",
+      "Amt in Local Curr",
+      "Amt in Doc",
+      "Currency",
+      "User name of jounral poster",
+      "Doc Type",
+      "Act Doc Entry Date",
+      "Line item",
+      "Debit/Credit Ind",
+      "Fiscal Year",
+      "Fiscal Period"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Act Doc Entry Date",
+      "Act Doc Posting Date"
+    ],
+    "amount_columns": [
+      "Amt in Local Curr",
+      "Amt in Doc"
+    ],
+    "effective_date": "Act Doc Posting Date",
+    "posted_date": "Act Doc Entry Date",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "Debit/Credit Ind",
+      "credit_value": "H",
+      "valid_values": [
+        "H",
+        "S"
+      ],
+      "columns_to_apply_to": [
+        "Amt in Local Curr",
+        "Amt in Doc"
+      ],
+      "transform_dc_indicators": true
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID22_SAP/Transform_SAP_ID22.py",
+  "_pipeline_id": "ID22"
+}

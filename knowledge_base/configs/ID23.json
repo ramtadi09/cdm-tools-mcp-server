@@ -1,0 +1,67 @@
+{
+  "erp_system": "Oracle E-Business Suite (EBS/e-BS)",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 0,
+    "report_format": false
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "Company",
+      "Scheme",
+      "GL_Account_Desc",
+      "JE_HEADER_ID",
+      "EffectDate",
+      "JnlDesc",
+      "SysValue",
+      "LineValue",
+      "LineCurr",
+      "USER_NAME",
+      "JnlType",
+      "PostDate",
+      "JE_LINE_NUM",
+      "CostCentre"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "EffectDate",
+      "PostDate"
+    ],
+    "amount_columns": [
+      "SysValue",
+      "LineValue"
+    ],
+    "effective_date": "EffectDate",
+    "posted_date": "PostDate",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID23_Oracle/Transform_Oracle_ID23.py",
+  "_pipeline_id": "ID23"
+}

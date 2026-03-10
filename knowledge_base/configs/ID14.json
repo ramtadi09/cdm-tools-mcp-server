@@ -1,0 +1,69 @@
+{
+  "erp_system": "Oracle E-Business Suite (EBS/e-BS)",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 0,
+    "report_format": false
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "Ledger Name",
+      "Account Code",
+      "Account Description",
+      "Journal Header Identifier",
+      "Accounting Date",
+      "Journal Batch Description",
+      "Journal Line Description",
+      "Journal Total Accounted",
+      "Ledger Currency",
+      "Journal Total Entered",
+      "Document Currency",
+      "Journal Created By Username",
+      "Journal Category Name",
+      "Posting Date",
+      "Journal Line Number",
+      "Cost Center Code"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Accounting Date",
+      "Posting Date"
+    ],
+    "amount_columns": [
+      "Journal Total Accounted",
+      "Journal Total Entered"
+    ],
+    "effective_date": "Accounting Date",
+    "posted_date": "Posting Date",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID14_Oracle/Transform_Oracle_ID14.py",
+  "_pipeline_id": "ID14"
+}

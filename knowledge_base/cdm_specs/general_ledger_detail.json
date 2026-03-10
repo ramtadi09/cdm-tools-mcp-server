@@ -1,0 +1,89 @@
+{
+  "data_model": "general_ledger_detail",
+  "pipeline_count": 18,
+  "fields": {
+    "net_amount_ec": {
+      "type": "decimal",
+      "description": "Net amount in entity currency",
+      "derived_from": "debit_credit.amount_ec or amount_columns"
+    },
+    "net_amount_oc": {
+      "type": "decimal",
+      "description": "Net amount in original/transaction currency",
+      "derived_from": "debit_credit.amount_oc or amount_columns"
+    },
+    "net_amount_gc": {
+      "type": "decimal",
+      "description": "Net amount in group currency",
+      "derived_from": "debit_credit.amount_gc or amount_columns"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "Company/entity identifier"
+    },
+    "account_number": {
+      "type": "string",
+      "description": "GL account number"
+    },
+    "journal_number": {
+      "type": "string",
+      "description": "Journal entry/document number"
+    },
+    "journal_line_number": {
+      "type": "string",
+      "description": "Line item number within journal"
+    },
+    "effective_date": {
+      "type": "date",
+      "description": "Effective/accounting date of transaction"
+    },
+    "posted_date": {
+      "type": "date",
+      "description": "Date transaction was posted/entered"
+    },
+    "time_posted": {
+      "type": "string",
+      "description": "Time of posting (derived in custom transforms)"
+    },
+    "journal_description": {
+      "type": "string",
+      "description": "Journal header description"
+    },
+    "line_description": {
+      "type": "string",
+      "description": "Journal line description"
+    },
+    "currency_code": {
+      "type": "string",
+      "description": "Transaction currency code"
+    },
+    "entity_currency": {
+      "type": "string",
+      "description": "Entity/functional currency code"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who created/posted the entry"
+    },
+    "journal_type": {
+      "type": "string",
+      "description": "Journal category/type"
+    },
+    "journal_source": {
+      "type": "string",
+      "description": "Source system/module"
+    },
+    "dc_indicator": {
+      "type": "string",
+      "description": "Debit/Credit indicator (D or C)",
+      "valid_values": [
+        "D",
+        "C"
+      ]
+    },
+    "adp_id": {
+      "type": "integer",
+      "description": "Row index added during processing"
+    }
+  }
+}

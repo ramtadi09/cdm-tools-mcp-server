@@ -1,0 +1,33 @@
+bundle:
+  name: cdm_tools_mcp_server
+
+sync:
+  exclude:
+    - tests/**
+    - .venv/**
+    - docs/**
+
+resources:
+  apps:
+    cdm_tools_mcp:
+      name: "${bundle.target}-cdm-tools-mcp"
+      description: "MCP Server exposing CDM transformation tools"
+      source_code_path: ./
+
+      resources:
+        - name: 'sql-warehouse'
+          sql_warehouse:
+            id: "2403afa2b3ff2eee"
+            permission: 'CAN_USE'
+
+targets:
+  dev:
+    mode: development
+    default: true
+
+  prod:
+    mode: production
+    resources:
+      apps:
+        cdm_tools_mcp:
+          name: cdm-tools-mcp

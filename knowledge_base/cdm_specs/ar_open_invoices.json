@@ -1,0 +1,46 @@
+{
+  "data_model": "ar_open_invoices",
+  "pipeline_count": 1,
+  "fields": {
+    "entity_id": {
+      "type": "string",
+      "description": "Company/entity identifier"
+    },
+    "customer_id": {
+      "type": "string",
+      "description": "Customer identifier"
+    },
+    "invoice_number": {
+      "type": "string",
+      "description": "Invoice number"
+    },
+    "document_date": {
+      "type": "date",
+      "description": "Invoice document date"
+    },
+    "due_date": {
+      "type": "date",
+      "description": "Payment due date"
+    },
+    "period_end_date": {
+      "type": "date",
+      "description": "Reporting period end date"
+    },
+    "net_amount_ec": {
+      "type": "decimal",
+      "description": "Net amount in entity currency"
+    },
+    "net_amount_oc": {
+      "type": "decimal",
+      "description": "Net amount in original currency"
+    },
+    "currency_code": {
+      "type": "string",
+      "description": "Transaction currency code"
+    },
+    "adp_id": {
+      "type": "integer",
+      "description": "Row index added during processing"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+command: ["uv", "run", "cdm-mcp-server"]
+
+env:
+  - name: CDM_CATALOG
+    value: "fins_genai"
+  - name: CDM_SCHEMA
+    value: "agents"
+  - name: CDM_WAREHOUSE_ID
+    value: "2403afa2b3ff2eee"
+  - name: CDM_KB_LOCAL_DIR
+    value: "knowledge_base"
+  - name: CDM_NOTEBOOK_PATH_PREFIX
+    value: "/Workspace/Users/${app.owner}/audit-cdm-agent/notebooks"

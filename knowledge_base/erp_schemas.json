@@ -1,0 +1,711 @@
+[
+  {
+    "erp_system": "Dynamics",
+    "pipeline_ids": [
+      "ID6",
+      "ID15",
+      "ID16"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "ACCOUNTDISPLAYVALUE",
+      "ACCOUNTINGCURRENCYAMOUNT",
+      "ACCOUNTINGDATE",
+      "AccountingCurrencyAmount",
+      "AccountingDate ",
+      "CREATEDBYORIG",
+      "CREATEDDATETIMEORIG",
+      "Company code",
+      "Currency Code",
+      "DESCRIPTION",
+      "Debit/Credit",
+      "Effective Value",
+      "Entry Date",
+      "Fiscal year",
+      "ISCREDIT",
+      "JOURNALBATCHNAME",
+      "JOURNALNUMBER",
+      "Journal Type",
+      "LEDGERNAME",
+      "LedgerAccount",
+      "Main account",
+      "POSTINGTYPE",
+      "Posting Date",
+      "Posting Value",
+      "Posting currency",
+      "REPORTINGCURRENCYAMOUNT",
+      "Reference",
+      "SubledgerVoucher",
+      "SubledgerVoucherDataAreaId",
+      "TRANSACTIONCURRENCYAMOUNT",
+      "TRANSACTIONCURRENCYCODE",
+      "TRANSACTIONCURRENCYCREDITAMOUNT",
+      "TRANSACTIONCURRENCYDEBITAMOUNT",
+      "Text",
+      "TransactionCurrencyAmount",
+      "TransactionCurrencyCode",
+      "User Id",
+      "User Name",
+      "Voucher",
+      "Voucher Description",
+      "createdBy",
+      "createdDateTime"
+    ],
+    "file_patterns": {
+      "header_values": [
+        "0"
+      ],
+      "has_report_format": false
+    },
+    "multi_file_specs": [
+      {
+        "pipeline_id": "ID16",
+        "extra_table": "User",
+        "extra_columns": [
+          "CREATEDBYORIG",
+          "User Name"
+        ],
+        "join_columns": {
+          "GL_To_User": [
+            "CREATEDBYORIG"
+          ]
+        }
+      }
+    ],
+    "dc_indicator_patterns": [
+      {
+        "pipeline_id": "ID6",
+        "column": "Debit/Credit",
+        "credit_value": "Credit",
+        "valid_values": [
+          "Debit",
+          "Credit"
+        ],
+        "columns_to_apply_to": [],
+        "transform_dc_indicators": true
+      }
+    ],
+    "debit_credit_patterns": null
+  },
+  {
+    "erp_system": "Generic",
+    "pipeline_ids": [
+      "ID74",
+      "ID75",
+      "ID76"
+    ],
+    "data_models": [
+      "ap_open_invoices",
+      "ar_open_invoices",
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "DS001.F01",
+      "DS001.F02",
+      "DS001.F03",
+      "DS001.F05",
+      "DS001.F06",
+      "DS001.F07",
+      "DS001.F08",
+      "DS001.F09",
+      "DS001.F10",
+      "DS001.F11",
+      "DS001.F12",
+      "DS001.F13",
+      "DS001.F14",
+      "DS001.F15",
+      "DS001.F16",
+      "DS001.F17",
+      "DS001.F18",
+      "DS001.F19",
+      "DS001.F20",
+      "DS002.F01",
+      "DS002.F02",
+      "DS002.F04",
+      "DS002.F05",
+      "DS002.F06",
+      "DS002.F07",
+      "DS002.F08",
+      "DS002.F09",
+      "DS002.F10",
+      "DS002.F11",
+      "DS002.F12",
+      "DS002.F13",
+      "DS002.F14",
+      "DS003.F01",
+      "DS003.F02",
+      "DS003.F04",
+      "DS003.F05",
+      "DS003.F06",
+      "DS003.F07",
+      "DS003.F08",
+      "DS003.F09",
+      "DS003.F10",
+      "DS003.F11",
+      "DS003.F12",
+      "DS003.F13"
+    ],
+    "file_patterns": {
+      "header_values": [],
+      "has_report_format": false
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": null,
+    "debit_credit_patterns": null
+  },
+  {
+    "erp_system": "Oracle",
+    "pipeline_ids": [
+      "ID2",
+      "ID29"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "ACCOUNT",
+      "ACCOUNTED_AMOUNT",
+      "ACCOUNTED_CR",
+      "ACCOUNTED_DR",
+      "APPROVER_ID",
+      "APP_NAME",
+      "Account",
+      "CREATION_DATE",
+      "CURRENCY_CODE",
+      "CURRENCY_CONVERSION_DATE",
+      "CURRENCY_CONVERSION_RATE",
+      "CURRENCY_CONVERSION_TYPE",
+      "Company",
+      "CostCentre",
+      "DESCRIPTION",
+      "EFFECTIVE_DATE_L",
+      "ENTERED_AMOUNT",
+      "ENTERED_CR",
+      "ENTERED_DR",
+      "ENTITY",
+      "EffectDate",
+      "GL_Account_Desc",
+      "JEDESC",
+      "JE_HEADER_ID",
+      "JE_LINE_NUM",
+      "JE_SOURCE",
+      "JnlDesc",
+      "JnlType",
+      "Jnl_Line_Description",
+      "LAST_UPDATED_BY_L",
+      "LAST_UPDATE_DATE_L",
+      "LEDGER_ID",
+      "LINEDESC",
+      "Ledger Category",
+      "Ledger Name",
+      "LineCurr",
+      "LineValue",
+      "MAN_SYS",
+      "PERIOD",
+      "PostDate",
+      "SOURCE_SYS",
+      "Source",
+      "SysValue",
+      "USER_ID",
+      "USER_NAME",
+      "User"
+    ],
+    "file_patterns": {
+      "header_values": [
+        "0"
+      ],
+      "has_report_format": false
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": null,
+    "debit_credit_patterns": null
+  },
+  {
+    "erp_system": "Oracle E-Business Suite (EBS/e-BS)",
+    "pipeline_ids": [
+      "ID12",
+      "ID13",
+      "ID14",
+      "ID23"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "ACCOUNT",
+      "AMOUNT_C",
+      "AMOUNT_D",
+      "Account Code",
+      "Account Description",
+      "Accounting Date",
+      "BASE_AMOUNT_C",
+      "BASE_AMOUNT_D",
+      "CREATED_BY",
+      "CURRENCY_CODE",
+      "Categoria",
+      "Combinatoria Cuentas",
+      "Company",
+      "Cost Center Code",
+      "CostCentre",
+      "Credito Local",
+      "Credito Moneda Origen",
+      "Cuenta",
+      "DESCRIPTION",
+      "Debito Local",
+      "Debito Moneda Origen",
+      "Descripcion",
+      "Document Currency",
+      "EFFECTIVE_DATE",
+      "EffectDate",
+      "Entidad Legal",
+      "Fecha Posteo",
+      "Fecha Registro",
+      "Functional_currency",
+      "GL_Account_Desc",
+      "ID Asiento",
+      "JE_CATEGORY",
+      "JE_HEADER_ID",
+      "JE_LINE_NUM",
+      "JE_SOURCE",
+      "JnlDesc",
+      "JnlType",
+      "Journal Batch Description",
+      "Journal Category Name",
+      "Journal Created By Username",
+      "Journal Header Identifier",
+      "Journal Line Description",
+      "Journal Line Number",
+      "Journal Total Accounted",
+      "Journal Total Entered",
+      "Journal_Header_ID",
+      "Journal_name",
+      "Ledger Currency",
+      "Ledger Name",
+      "LineCurr",
+      "LineValue",
+      "Linea",
+      "Moneda",
+      "Nombre",
+      "Nombre Cta",
+      "Origen",
+      "POSTED_DATE",
+      "PostDate",
+      "Posting Date",
+      "Registrado por",
+      "Scheme",
+      "SysValue",
+      "TC",
+      "USER_NAME"
+    ],
+    "file_patterns": {
+      "header_values": [
+        "0",
+        "4"
+      ],
+      "has_report_format": true
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": null,
+    "debit_credit_patterns": [
+      {
+        "pipeline_id": "ID12",
+        "config": {
+          "amount_oc": {
+            "debit_column": "AMOUNT_D",
+            "credit_column": "AMOUNT_C",
+            "operator": "-"
+          },
+          "amount_ec": {
+            "debit_column": "BASE_AMOUNT_D",
+            "credit_column": "BASE_AMOUNT_C",
+            "operator": "-"
+          }
+        }
+      },
+      {
+        "pipeline_id": "ID13",
+        "config": {
+          "amount_oc": {
+            "debit_column": "Debito Moneda Origen",
+            "credit_column": "Credito Moneda Origen",
+            "operator": "-"
+          },
+          "amount_ec": {
+            "debit_column": "Debito Local",
+            "credit_column": "Credito Local",
+            "operator": "-"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "erp_system": "SAP",
+    "pipeline_ids": [
+      "ID3"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "BELNR",
+      "BKTXT",
+      "BLART",
+      "BUDAT",
+      "BUKRS",
+      "BUZEI",
+      "CPUDT",
+      "CPUTM",
+      "DMBTR",
+      "GJAHR",
+      "HKONT",
+      "KOSTL",
+      "MANDT",
+      "MONAT",
+      "SGTXT",
+      "SHKZG",
+      "TCODE",
+      "USNAM",
+      "WAERS",
+      "WRBTR"
+    ],
+    "file_patterns": {
+      "header_values": [],
+      "has_report_format": false
+    },
+    "multi_file_specs": [
+      {
+        "pipeline_id": "ID3",
+        "extra_table": "BKPF",
+        "extra_columns": [
+          "MANDT",
+          "GJAHR",
+          "BUKRS",
+          "BELNR",
+          "BLART",
+          "BUDAT",
+          "CPUDT",
+          "USNAM",
+          "BKTXT",
+          "WAERS",
+          "TCODE",
+          "MONAT",
+          "CPUTM"
+        ],
+        "join_columns": {
+          "BSEG_To_BKPF": [
+            "MANDT",
+            "BUKRS",
+            "BELNR",
+            "GJAHR"
+          ]
+        }
+      }
+    ],
+    "dc_indicator_patterns": [
+      {
+        "pipeline_id": "ID3",
+        "column": "SHKZG",
+        "credit_value": "H",
+        "valid_values": [
+          "H",
+          "S"
+        ],
+        "columns_to_apply_to": [
+          "DMBTR",
+          "WRBTR"
+        ],
+        "transform_dc_indicators": true
+      }
+    ],
+    "debit_credit_patterns": null
+  },
+  {
+    "erp_system": "SAP ERP Central Component (ECC)",
+    "pipeline_ids": [
+      "ID21",
+      "ID22",
+      "ID28"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "Account",
+      "Act Doc Entry Date",
+      "Act Doc No",
+      "Act Doc Posting Date",
+      "Amount in FC",
+      "Amount in LC",
+      "Amt in Doc",
+      "Amt in Local Curr",
+      "BA",
+      "BusA",
+      "CoCd",
+      "Company Code",
+      "Cost ctr",
+      "Crcy",
+      "Curr ",
+      "Currency",
+      "D C",
+      "D/C",
+      "Debit/Credit Ind",
+      "Doc  type",
+      "Doc Header Text",
+      "Doc Type",
+      "Doc no ",
+      "Document header text",
+      "DocumentNo",
+      "Entry Date",
+      "Entry dte",
+      "Exch rate",
+      "Fiscal Period",
+      "Fiscal Year",
+      "Fiscal period",
+      "G L acct",
+      "GL Code",
+      "Itm",
+      "Ld",
+      "Line item",
+      "Loc curr amount",
+      "Period",
+      "Pstng Date",
+      "Pstng date",
+      "Reference",
+      "Short Text",
+      "Tcod",
+      "Text",
+      "Type",
+      "User name",
+      "User name of jounral poster",
+      "Year"
+    ],
+    "file_patterns": {
+      "header_values": [
+        "0"
+      ],
+      "has_report_format": true
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": [
+      {
+        "pipeline_id": "ID21",
+        "column": "D/C",
+        "credit_value": "H",
+        "valid_values": [
+          "H",
+          "S"
+        ],
+        "columns_to_apply_to": [],
+        "transform_dc_indicators": true
+      },
+      {
+        "pipeline_id": "ID22",
+        "column": "Debit/Credit Ind",
+        "credit_value": "H",
+        "valid_values": [
+          "H",
+          "S"
+        ],
+        "columns_to_apply_to": [
+          "Amt in Local Curr",
+          "Amt in Doc"
+        ],
+        "transform_dc_indicators": true
+      },
+      {
+        "pipeline_id": "ID28",
+        "column": "D C",
+        "credit_value": "H",
+        "valid_values": [
+          "H",
+          "S"
+        ],
+        "columns_to_apply_to": [
+          "Loc curr amount"
+        ],
+        "transform_dc_indicators": true
+      }
+    ],
+    "debit_credit_patterns": null
+  },
+  {
+    "erp_system": "SAP_2",
+    "pipeline_ids": [
+      "ID24"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "Accounting_Document_Number",
+      "Amount_in_Document_Currency",
+      "Amount_in_Local_Currency",
+      "Amount_in_Second_Local_Currency",
+      "Company_Code",
+      "Controlling_Area",
+      "Cost_Center",
+      "Currency_Key",
+      "Day_On_Which_Accounting_Document_Was_Entered",
+      "Debit_Credit_Indicator",
+      "Document_Header_Text",
+      "Document_Type",
+      "Exchange_rate",
+      "Fiscal_Period",
+      "Fiscal_Year",
+      "General_Ledger_Account",
+      "Item_Text",
+      "Number_of_Line_Item_Within_Accounting_Document",
+      "Posting_Date_in_the_Document",
+      "Transaction_Code",
+      "User_Name"
+    ],
+    "file_patterns": {
+      "header_values": [],
+      "has_report_format": false
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": [
+      {
+        "pipeline_id": "ID24",
+        "column": "Debit_Credit_Indicator",
+        "credit_value": "H",
+        "valid_values": [
+          "H",
+          "S"
+        ],
+        "columns_to_apply_to": [
+          "Amount_in_Document_Currency",
+          "Amount_in_Local_Currency",
+          "Amount_in_Second_Local_Currency"
+        ],
+        "transform_dc_indicators": true
+      }
+    ],
+    "debit_credit_patterns": null
+  },
+  {
+    "erp_system": "Sage 200",
+    "pipeline_ids": [
+      "ID20"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "A/C No.",
+      "A/c Name",
+      "CC",
+      "Credit",
+      "Debit",
+      "Narrative",
+      "Period",
+      "Reference",
+      "TranDate",
+      "URN"
+    ],
+    "file_patterns": {
+      "header_values": [
+        "0"
+      ],
+      "has_report_format": true
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": null,
+    "debit_credit_patterns": [
+      {
+        "pipeline_id": "ID20",
+        "config": {
+          "amount_ec": {
+            "debit_column": "Debit",
+            "credit_column": "Credit",
+            "operator": "-"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "erp_system": "Sage 300 (formerly Accpac)",
+    "pipeline_ids": [
+      "ID19"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "ACCTDESC",
+      "Acctid",
+      "CODECTRY",
+      "CODESTTE",
+      "CONVRATE",
+      "Company",
+      "ENTEREDBY",
+      "ENTRYNBR",
+      "FISCALPERD",
+      "FISCALYR",
+      "JNLDTLDESC",
+      "JNLDTLREF",
+      "JRNLDATE",
+      "POSTINGSEQ",
+      "S NAME",
+      "SCURNAMT",
+      "SCURNCODE",
+      "SRCELEDGER",
+      "SRCETYPE",
+      "TRANSAMT"
+    ],
+    "file_patterns": {
+      "header_values": [
+        "0"
+      ],
+      "has_report_format": false
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": null,
+    "debit_credit_patterns": null
+  },
+  {
+    "erp_system": "Sage 50",
+    "pipeline_ids": [
+      "ID4"
+    ],
+    "data_models": [
+      "general_ledger_detail"
+    ],
+    "known_columns": [
+      "Credit",
+      "Date",
+      "Debit",
+      "Details",
+      "Entity",
+      "N/C",
+      "Name",
+      "No",
+      "Ref",
+      "Type"
+    ],
+    "file_patterns": {
+      "header_values": [
+        "0"
+      ],
+      "has_report_format": true
+    },
+    "multi_file_specs": null,
+    "dc_indicator_patterns": null,
+    "debit_credit_patterns": [
+      {
+        "pipeline_id": "ID4",
+        "config": {
+          "amount_ec": {
+            "debit_column": "Debit",
+            "credit_column": "Credit",
+            "operator": "-"
+          }
+        }
+      }
+    ]
+  }
+]

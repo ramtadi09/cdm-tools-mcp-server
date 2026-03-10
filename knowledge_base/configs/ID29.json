@@ -1,0 +1,88 @@
+{
+  "erp_system": "Oracle",
+  "data_model": "general_ledger_detail",
+  "report_format": false,
+  "transformation_variables": {
+    "required_columns": [
+      "ENTITY",
+      "ACCOUNT",
+      "DESCRIPTION",
+      "JE_HEADER_ID",
+      "EFFECTIVE_DATE_L",
+      "JEDESC",
+      "LINEDESC",
+      "CREATION_DATE",
+      "JE_SOURCE",
+      "CURRENCY_CODE",
+      "ENTERED_AMOUNT",
+      "ACCOUNTED_AMOUNT",
+      "USER_ID",
+      "USER_NAME",
+      "MAN_SYS",
+      "SOURCE_SYS",
+      "APPROVER_ID",
+      "APP_NAME",
+      "CURRENCY_CONVERSION_RATE",
+      "CURRENCY_CONVERSION_DATE",
+      "CURRENCY_CONVERSION_TYPE",
+      "LAST_UPDATED_BY_L",
+      "LAST_UPDATE_DATE_L",
+      "PERIOD",
+      "LEDGER_ID",
+      "ENTERED_DR",
+      "ENTERED_CR",
+      "ACCOUNTED_DR",
+      "ACCOUNTED_CR"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "EFFECTIVE_DATE_L",
+      "CREATION_DATE",
+      "CURRENCY_CONVERSION_DATE",
+      "LAST_UPDATE_DATE_L"
+    ],
+    "amount_columns": [
+      "ACCOUNTED_AMOUNT",
+      "ENTERED_AMOUNT",
+      "ENTERED_DR",
+      "ENTERED_CR",
+      "ACCOUNTED_DR",
+      "ACCOUNTED_CR",
+      "CURRENCY_CONVERSION_RATE"
+    ],
+    "effective_date": "EFFECTIVE_DATE_L",
+    "posted_date": "CREATION_DATE",
+    "foreign_exchange_date": "CURRENCY_CONVERSION_DATE",
+    "date_updated": "LAST_UPDATE_DATE_L",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID29_Oracle/Transform_Oracle_ID29.py",
+  "_pipeline_id": "ID29"
+}

@@ -1,0 +1,88 @@
+{
+  "erp_system": "SAP",
+  "data_model": "general_ledger_detail",
+  "report_format": false,
+  "transformation_variables": {
+    "required_columns": [
+      "MANDT",
+      "GJAHR",
+      "BUKRS",
+      "BELNR",
+      "GJAHR",
+      "SHKZG",
+      "DMBTR",
+      "WRBTR",
+      "SGTXT",
+      "HKONT",
+      "BUZEI",
+      "KOSTL"
+    ],
+    "extra_table_columns": {
+      "BKPF": [
+        "MANDT",
+        "GJAHR",
+        "BUKRS",
+        "BELNR",
+        "BLART",
+        "BUDAT",
+        "CPUDT",
+        "USNAM",
+        "BKTXT",
+        "WAERS",
+        "TCODE",
+        "MONAT",
+        "CPUTM"
+      ]
+    },
+    "join_columns": {
+      "BSEG_To_BKPF": [
+        "MANDT",
+        "BUKRS",
+        "BELNR",
+        "GJAHR"
+      ]
+    },
+    "date_columns": [
+      "BUDAT",
+      "CPUDT"
+    ],
+    "amount_columns": [
+      "DMBTR",
+      "WRBTR"
+    ],
+    "effective_date": "BUDAT",
+    "posted_date": "CPUDT",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "SHKZG",
+      "credit_value": "H",
+      "valid_values": [
+        "H",
+        "S"
+      ],
+      "columns_to_apply_to": [
+        "DMBTR",
+        "WRBTR"
+      ],
+      "transform_dc_indicators": true
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID3_SAP/Transform_SAP_ID3.py",
+  "_pipeline_id": "ID3"
+}

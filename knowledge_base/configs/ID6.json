@@ -1,0 +1,67 @@
+{
+  "erp_system": "Dynamics",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 0,
+    "report_format": false
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "Fiscal year",
+      "Company code",
+      "Journal Type",
+      "Voucher",
+      "Entry Date",
+      "Posting Date",
+      "User Id",
+      "Currency Code",
+      "Main account",
+      "Posting Value",
+      "Posting currency",
+      "Effective Value",
+      "Debit/Credit",
+      "Voucher Description"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "Entry Date",
+      "Posting Date"
+    ],
+    "amount_columns": [
+      "Posting Value",
+      "Effective Value"
+    ],
+    "effective_date": "Posting Date",
+    "posted_date": "Entry Date",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "Debit/Credit",
+      "credit_value": "Credit",
+      "valid_values": [
+        "Debit",
+        "Credit"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": true
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID6_Dynamics/Transform_Dynamics_ID6.py",
+  "_pipeline_id": "ID6"
+}

@@ -1,0 +1,142 @@
+[
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID12_Oracle/Transform_Oracle_ID12.py",
+    "pipeline_id": "ID12",
+    "erp_system": "Oracle",
+    "pipeline_dir": "Pipeline_ID12_Oracle"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID13_Oracle/Transform_Oracle_ID13.py",
+    "pipeline_id": "ID13",
+    "erp_system": "Oracle",
+    "pipeline_dir": "Pipeline_ID13_Oracle"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID14_Oracle/Transform_Oracle_ID14.py",
+    "pipeline_id": "ID14",
+    "erp_system": "Oracle",
+    "pipeline_dir": "Pipeline_ID14_Oracle"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID15_Dynamics/Transform_Dynamics_ID15.py",
+    "pipeline_id": "ID15",
+    "erp_system": "Dynamics",
+    "pipeline_dir": "Pipeline_ID15_Dynamics"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID16_Dynamics/Transform_Dynamics_ID16.py",
+    "pipeline_id": "ID16",
+    "erp_system": "Dynamics",
+    "pipeline_dir": "Pipeline_ID16_Dynamics"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID19_Sage/Transform_Sage_ID19.py",
+    "pipeline_id": "ID19",
+    "erp_system": "Sage",
+    "pipeline_dir": "Pipeline_ID19_Sage"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID20_Sage/Transform_Sage_ID20.py",
+    "pipeline_id": "ID20",
+    "erp_system": "Sage",
+    "pipeline_dir": "Pipeline_ID20_Sage"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID21_SAP/Transform_SAP_ID21.py",
+    "pipeline_id": "ID21",
+    "erp_system": "SAP",
+    "pipeline_dir": "Pipeline_ID21_SAP"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID22_SAP/Transform_SAP_ID22.py",
+    "pipeline_id": "ID22",
+    "erp_system": "SAP",
+    "pipeline_dir": "Pipeline_ID22_SAP"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID23_Oracle/Transform_Oracle_ID23.py",
+    "pipeline_id": "ID23",
+    "erp_system": "Oracle",
+    "pipeline_dir": "Pipeline_ID23_Oracle"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID24_SAP/Transform_SAP_ID24.py",
+    "pipeline_id": "ID24",
+    "erp_system": "SAP",
+    "pipeline_dir": "Pipeline_ID24_SAP"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID28_SAP/Transform_SAP_ID28.py",
+    "pipeline_id": "ID28",
+    "erp_system": "SAP",
+    "pipeline_dir": "Pipeline_ID28_SAP"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID29_Oracle/Transform_Oracle_ID29.py",
+    "pipeline_id": "ID29",
+    "erp_system": "Oracle",
+    "pipeline_dir": "Pipeline_ID29_Oracle"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID2_Oracle/Transform_Oracle_ID2.py",
+    "pipeline_id": "ID2",
+    "erp_system": "Oracle",
+    "pipeline_dir": "Pipeline_ID2_Oracle"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID3_SAP/Transform_SAP_ID3.py",
+    "pipeline_id": "ID3",
+    "erp_system": "SAP",
+    "pipeline_dir": "Pipeline_ID3_SAP"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID4_Sage/Transform_Sage_ID4.py",
+    "pipeline_id": "ID4",
+    "erp_system": "Sage",
+    "pipeline_dir": "Pipeline_ID4_Sage"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID6_Dynamics/Transform_Dynamics_ID6.py",
+    "pipeline_id": "ID6",
+    "erp_system": "Dynamics",
+    "pipeline_dir": "Pipeline_ID6_Dynamics"
+  },
+  {
+    "cdm_name": "general_ledger_detail",
+    "notebook_path": "sample_data/Pipeline_ID74_Generic/Transform_Generic_Serengeti_ID74.py",
+    "pipeline_id": "ID74",
+    "erp_system": "Generic",
+    "pipeline_dir": "Pipeline_ID74_Generic"
+  },
+  {
+    "cdm_name": "ap_open_invoices",
+    "notebook_path": "sample_data/Pipeline_ID75_Generic/Transform_Generic_Serengeti_AP_ID75.py",
+    "pipeline_id": "ID75",
+    "erp_system": "Generic",
+    "pipeline_dir": "Pipeline_ID75_Generic"
+  },
+  {
+    "cdm_name": "ar_open_invoices",
+    "notebook_path": "sample_data/Pipeline_ID76_Generic/Transform_Generic_Serengeti_AR_ID76.py",
+    "pipeline_id": "ID76",
+    "erp_system": "Generic",
+    "pipeline_dir": "Pipeline_ID76_Generic"
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "erp_system": "Dynamics",
+  "data_model": "general_ledger_detail",
+  "read_in_variables": {
+    "header": 0,
+    "report_format": false
+  },
+  "transformation_variables": {
+    "required_columns": [
+      "SubledgerVoucherDataAreaId",
+      "LedgerAccount",
+      "SubledgerVoucher",
+      "AccountingDate ",
+      "Reference",
+      "Text",
+      "createdDateTime",
+      "TransactionCurrencyCode",
+      "AccountingCurrencyAmount",
+      "createdBy",
+      "TransactionCurrencyAmount"
+    ],
+    "extra_table_columns": {},
+    "join_columns": {},
+    "date_columns": [
+      "AccountingDate",
+      "createdDateTime"
+    ],
+    "amount_columns": [
+      "TransactionCurrencyAmount",
+      "AccountingCurrencyAmount"
+    ],
+    "effective_date": "AccountingDate",
+    "posted_date": "createdDateTime",
+    "debit_credit": {
+      "amount_oc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_ec": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      },
+      "amount_gc": {
+        "debit_column": "",
+        "credit_column": "",
+        "operator": "-"
+      }
+    },
+    "dc_indicator": {
+      "column": "",
+      "credit_value": "C",
+      "valid_values": [
+        "D",
+        "C"
+      ],
+      "columns_to_apply_to": [],
+      "transform_dc_indicators": false
+    }
+  },
+  "_source_notebook": "sample_data/Pipeline_ID15_Dynamics/Transform_Dynamics_ID15.py",
+  "_pipeline_id": "ID15"
+}
