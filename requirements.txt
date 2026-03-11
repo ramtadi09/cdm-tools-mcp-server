@@ -1,1 +1,9 @@
-uv
+fastapi>=0.115.12
+fastmcp>=2.12.5
+mcp[cli]>=1.14.0
+uvicorn>=0.34.2
+databricks-sdk>=0.63.0
+pydantic>=2
+pandas>=2.2
+openpyxl>=3.1
+chardet>=5.0

@@ -1,13 +1,13 @@
-command: ["uv", "run", "cdm-mcp-server"]
+command: ["uvicorn", "server.app:combined_app", "--host", "0.0.0.0", "--port", "8000"]
 
 env:
   - name: CDM_CATALOG
-    value: "fins_genai"
+    value: "cortex_dev_catalog"
   - name: CDM_SCHEMA
-    value: "agents"
+    value: "0000_ram"
   - name: CDM_WAREHOUSE_ID
-    value: "2403afa2b3ff2eee"
+    value: "0473e5322360c662"
   - name: CDM_KB_LOCAL_DIR
     value: "knowledge_base"
   - name: CDM_NOTEBOOK_PATH_PREFIX
-    value: "/Workspace/Users/${app.owner}/audit-cdm-agent/notebooks"
+    value: "/Workspace/Users/${app.owner}/cdm-tools-mcp-server/notebooks"

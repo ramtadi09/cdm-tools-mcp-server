@@ -10,7 +10,8 @@ from cdm_tools.models import NotebookGenerationResult, TransformConfig
 
 def load_template(cdm_name: str) -> str:
     """Read the template notebook for a given CDM data model."""
-    template_path = Path(config.NOTEBOOK_TEMPLATE_DIR) / f"transform_{cdm_name}.py"
+    # Use .template extension to prevent Databricks from stripping it during deployment
+    template_path = Path(config.NOTEBOOK_TEMPLATE_DIR) / f"transform_{cdm_name}.template"
     if not template_path.exists():
         raise FileNotFoundError(f"Template not found: {template_path}")
     return template_path.read_text()

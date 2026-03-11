@@ -8,17 +8,46 @@ sync:
     - docs/**
 
 resources:
+  # MCP Server App (deployed with every `bundle deploy`)
   apps:
     cdm_tools_mcp:
-      name: "${bundle.target}-cdm-tools-mcp"
+      name: "mcp-cdm-tools-${bundle.target}"
       description: "MCP Server exposing CDM transformation tools"
       source_code_path: ./
+
+      # OAuth scopes for user authorization (OBO)
+      user_api_scopes:
+        - sql
+        - files.files
 
       resources:
         - name: 'sql-warehouse'
           sql_warehouse:
-            id: "2403afa2b3ff2eee"
+            id: "0473e5322360c662"
             permission: 'CAN_USE'
+
+  # Bootstrap Job (run ONCE with `bundle run bootstrap_knowledge_base`)
+  jobs:
+    bootstrap_knowledge_base:
+      name: "[${bundle.target}] Bootstrap CDM Knowledge Base"
+      description: "One-time job to seed knowledge base Delta tables. Run manually after initial deployment."
+      tasks:
+        - task_key: seed_tables
+          notebook_task:
+            notebook_path: ./notebooks/seed_knowledge_base.py
+          new_cluster:
+            spark_version: "14.3.x-scala2.12"
+            node_type_id: "Standard_DS3_v2"
+            num_workers: 0
+            data_security_mode: "SINGLE_USER"
+            spark_conf:
+              "spark.databricks.cluster.profile": "singleNode"
+              "spark.master": "local[*]"
+            custom_tags:
+              "ResourceClass": "SingleNode"
+      tags:
+        purpose: "bootstrap"
+        run_frequency: "once"
 
 targets:
   dev:
@@ -30,4 +59,4 @@ targets:
     resources:
       apps:
         cdm_tools_mcp:
-          name: cdm-tools-mcp
+          name: mcp-cdm-tools

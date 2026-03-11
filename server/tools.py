@@ -25,11 +25,15 @@ from cdm_tools.models import (
     TransformPreview,
 )
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def register_tools(mcp: FastMCP) -> None:
     """Register all 9 CDM tools on the given FastMCP server."""
+
+    logger.info("TOOLS: Registering 9 CDM tools...")
 
     # ── Schema Analyzer Tools ──
 
@@ -43,19 +47,32 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON string of SchemaReport with file info, column profiles, and classification.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: analyze_files")
+        logger.info(f"TOOL CALL: file_paths = {file_paths}")
+        logger.info("=" * 70)
+
         files_info = []
         all_profiles = {}
         loaded_dfs = {}
 
         for fp in file_paths:
+            logger.info(f"TOOL: Processing file: {fp}")
             try:
                 path = resolve_file(fp)
             except FileNotFoundError:
-                logger.warning("File not found, skipping: %s", fp)
+                logger.warning("TOOL: File not found, skipping: %s", fp)
                 continue
 
+            logger.info(f"TOOL: Detecting format for {path.name}...")
             fmt = detect_format(path)
+            logger.info(f"TOOL: Format: {fmt.file_type}, delimiter: {fmt.delimiter}")
+
+            logger.info(f"TOOL: Loading file...")
             df = load_file(path, fmt)
+            logger.info(f"TOOL: Loaded {len(df)} rows, {len(df.columns)} columns")
+
+            logger.info(f"TOOL: Profiling columns...")
             profiles = profile_columns(df)
 
             files_info.append(FileInfo(
@@ -76,6 +93,7 @@ def register_tools(mcp: FastMCP) -> None:
             all_profiles[path.name] = profile_models
             loaded_dfs[path.name] = df
 
+        logger.info(f"TOOL: Classifying {len(loaded_dfs)} files as fact/dimension...")
         classification = classify_files(loaded_dfs) if loaded_dfs else None
 
         report = SchemaReport(
@@ -91,6 +109,7 @@ def register_tools(mcp: FastMCP) -> None:
                 for j in (classification.joins if classification else [])
             ],
         )
+        logger.info(f"TOOL: analyze_files completed successfully")
         return report.model_dump_json()
 
     @mcp.tool()
@@ -100,8 +119,14 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON dict mapping ERP system name to list of known columns.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: lookup_erp_columns")
+        logger.info("=" * 70)
+
         from cdm_tools.kb_queries import get_all_erp_columns
-        return json.dumps(get_all_erp_columns())
+        result = get_all_erp_columns()
+        logger.info(f"TOOL: lookup_erp_columns completed, found {len(result)} ERP systems")
+        return json.dumps(result)
 
     # ── Mapping Tools ──
 
@@ -115,8 +140,15 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON dict of field name -> {type, description} for the CDM model.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: lookup_cdm_fields")
+        logger.info(f"TOOL CALL: cdm_name = '{cdm_name}'")
+        logger.info("=" * 70)
+
         from cdm_tools.kb_queries import get_cdm_spec
-        return json.dumps(get_cdm_spec(cdm_name))
+        result = get_cdm_spec(cdm_name)
+        logger.info(f"TOOL: lookup_cdm_fields completed, found {len(result)} fields")
+        return json.dumps(result)
 
     @mcp.tool()
     def find_past_mappings(erp_system: str, cdm_name: str) -> str:
@@ -129,8 +161,15 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON list of past mapping configs.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: find_past_mappings")
+        logger.info(f"TOOL CALL: erp_system = '{erp_system}', cdm_name = '{cdm_name}'")
+        logger.info("=" * 70)
+
         from cdm_tools.kb_queries import find_similar_mappings
-        return json.dumps(find_similar_mappings(erp_system, cdm_name))
+        result = find_similar_mappings(erp_system, cdm_name)
+        logger.info(f"TOOL: find_past_mappings completed, found {len(result)} mappings")
+        return json.dumps(result)
 
     # ── Transform Tools ──
 
@@ -145,6 +184,11 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON string of TransformPreview with sample rows and warnings.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: preview_transform")
+        logger.info(f"TOOL CALL: file_paths = {file_paths}")
+        logger.info("=" * 70)
+
         from cdm_tools.transform_preview import apply_preview
 
         config_data = json.loads(config_json)
@@ -159,7 +203,7 @@ def register_tools(mcp: FastMCP) -> None:
             try:
                 path = resolve_file(fp)
             except FileNotFoundError:
-                logger.warning("File not found for preview, skipping: %s", fp)
+                logger.warning("TOOL: File not found for preview, skipping: %s", fp)
                 continue
             fmt = detect_format(path)
             dfs[path.name] = load_file(path, fmt)
@@ -173,6 +217,7 @@ def register_tools(mcp: FastMCP) -> None:
             sample_rows=preview_df.head(10).to_dict(orient="records"),
             warnings=warnings,
         )
+        logger.info(f"TOOL: preview_transform completed, {len(preview_df)} rows")
         return preview.model_dump_json()
 
     @mcp.tool()
@@ -186,10 +231,16 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON with matching notebook info or empty list.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: lookup_pipeline_notebook")
+        logger.info(f"TOOL CALL: cdm_name = '{cdm_name}', erp_system = '{erp_system}'")
+        logger.info("=" * 70)
+
         from cdm_tools import config as cfg
 
         registry_path = Path(cfg.KB_LOCAL_DIR) / "pipeline_notebooks.json"
         if not registry_path.exists():
+            logger.warning(f"TOOL: pipeline_notebooks.json not found at {registry_path}")
             return json.dumps([])
 
         notebooks = json.loads(registry_path.read_text())
@@ -200,6 +251,8 @@ def register_tools(mcp: FastMCP) -> None:
                 if prefix and not nb["notebook_path"].startswith("/"):
                     nb = {**nb, "notebook_path": f"{prefix}/{nb['notebook_path']}"}
                 matches.append(nb)
+
+        logger.info(f"TOOL: lookup_pipeline_notebook completed, found {len(matches)} matches")
         return json.dumps(matches)
 
     @mcp.tool()
@@ -217,10 +270,18 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON string of JobSetupResult with job_id and URL.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: setup_databricks_job")
+        logger.info(f"TOOL CALL: notebook_path = '{notebook_path}'")
+        logger.info(f"TOOL CALL: cluster_id = '{cluster_id}'")
+        logger.info(f"TOOL CALL: job_name = '{job_name}'")
+        logger.info("=" * 70)
+
         from cdm_tools.job_setup import setup_transform_job
 
         config_data = json.loads(config_json)
         result = setup_transform_job(notebook_path, cluster_id, job_name, config_data)
+        logger.info(f"TOOL: setup_databricks_job completed, status: {result.status}")
         return result.model_dump_json()
 
     @mcp.tool()
@@ -241,6 +302,12 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON string of NotebookGenerationResult with full notebook code.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: generate_transform_notebook")
+        logger.info(f"TOOL CALL: erp_system = '{erp_system}'")
+        logger.info(f"TOOL CALL: notebook_title = '{notebook_title}'")
+        logger.info("=" * 70)
+
         from cdm_tools.notebook_generator import generate_notebook
 
         config_data = json.loads(config_json)
@@ -250,6 +317,7 @@ def register_tools(mcp: FastMCP) -> None:
             else TransformConfig.model_validate(config_data)
         )
         result = generate_notebook(tc, erp_system, notebook_title, user_description)
+        logger.info(f"TOOL: generate_transform_notebook completed")
         return result.model_dump_json()
 
     # ── Validation Tools ──
@@ -274,10 +342,17 @@ def register_tools(mcp: FastMCP) -> None:
         Returns:
             JSON string of ValidationReport.
         """
+        logger.info("=" * 70)
+        logger.info("TOOL CALL: validate_data")
+        logger.info(f"TOOL CALL: cdm_name = '{cdm_name}'")
+        logger.info(f"TOOL CALL: date_columns = {date_columns}")
+        logger.info("=" * 70)
+
         from cdm_tools.validation_checks import run_all_checks
 
         rows = json.loads(preview_rows_json)
         df = pd.DataFrame(rows)
+        logger.info(f"TOOL: Validating {len(df)} rows")
 
         cdm_fields = {}
         required_fields = []
@@ -285,8 +360,8 @@ def register_tools(mcp: FastMCP) -> None:
             from cdm_tools.kb_queries import get_cdm_spec
             cdm_fields = get_cdm_spec(cdm_name)
             required_fields = list(cdm_fields.keys())
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"TOOL: Could not load CDM spec: {e}")
 
         report = run_all_checks(
             df=df,
@@ -296,4 +371,7 @@ def register_tools(mcp: FastMCP) -> None:
             debit_col=debit_col,
             credit_col=credit_col,
         )
+        logger.info(f"TOOL: validate_data completed")
         return report.model_dump_json()
+
+    logger.info("TOOLS: All 9 CDM tools registered successfully")
