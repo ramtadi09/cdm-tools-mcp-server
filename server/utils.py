@@ -77,31 +77,38 @@ def get_caller_workspace_client(headers: dict | None = None) -> WorkspaceClient:
         else:
             logger.info(f"AUTH:   {key}: {value}")
 
-    # Priority 1: Databricks UI injects user token via this header (OBO)
-    token = headers.get("x-forwarded-access-token")
-    if token:
+    # Priority 1: Custom header from cross-app call (user's real OBO token)
+    # The Databricks proxy overwrites x-forwarded-access-token with the calling
+    # app's SP token, so the real user token must be sent via a custom header.
+    user_token = headers.get("x-databricks-user-token")
+
+    # Priority 2: Direct access via Databricks UI (AI Playground)
+    # When a user accesses the app directly, the proxy injects the user's OBO
+    # token into x-forwarded-access-token (not overwritten in this case).
+    if not user_token:
+        user_token = headers.get("x-forwarded-access-token")
+
+    if user_token:
+        source = "x-databricks-user-token" if headers.get("x-databricks-user-token") else "x-forwarded-access-token"
         logger.info("-" * 60)
-        logger.info("AUTH: [OBO - ON BEHALF OF USER]")
-        logger.info("AUTH: Found 'x-forwarded-access-token' header")
+        logger.info(f"AUTH: [OBO] Found token via '{source}'")
 
         # Decode JWT to identify whose token this actually is
         try:
             import jwt as pyjwt
-            decoded = pyjwt.decode(token, options={"verify_signature": False})
+            decoded = pyjwt.decode(user_token, options={"verify_signature": False})
             subject = decoded.get("sub", "unknown")
             email = decoded.get("email") or decoded.get("upn") or decoded.get("unique_name") or "N/A"
             scopes = decoded.get("scp", decoded.get("scope", "N/A"))
-            issuer = decoded.get("iss", "unknown")
             logger.info(f"AUTH: Token subject (sub): {subject}")
             logger.info(f"AUTH: Token email/upn: {email}")
             logger.info(f"AUTH: Token scopes: {scopes}")
-            logger.info(f"AUTH: Token issuer: {issuer}")
         except Exception as e:
             logger.warning(f"AUTH: Could not decode JWT: {e}")
 
-        logger.info(f"AUTH: Token preview: {token[:20]}...{token[-10:]}")
+        logger.info(f"AUTH: Token preview: {user_token[:20]}...{user_token[-10:]}")
         logger.info("-" * 60)
-        return WorkspaceClient(token=token, auth_type="pat")
+        return WorkspaceClient(token=user_token, auth_type="pat")
 
     # Priority 2: M2M caller sends Bearer token in Authorization header
     auth_header = headers.get("authorization", "")
