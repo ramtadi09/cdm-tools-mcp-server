@@ -245,11 +245,11 @@ def build_custom_section_prompt(
     return "\n".join(lines)
 
 
-def _get_erp_schema_safe(erp_system: str) -> dict | None:
+def _get_erp_schema_safe(erp_system: str, headers: dict | None = None) -> dict | None:
     """Try to fetch ERP schema from KB, return None on failure."""
     try:
         from cdm_tools.kb_queries import get_erp_schema
-        return get_erp_schema(erp_system)
+        return get_erp_schema(erp_system, headers=headers)
     except Exception:
         return None
 
@@ -259,6 +259,7 @@ def generate_notebook(
     erp_system: str,
     notebook_title: str,
     user_description: str = "",
+    headers: dict | None = None,
 ) -> NotebookGenerationResult:
     """Generate a complete notebook from template + TransformConfig."""
     tc_with_erp = tc.model_copy(update={"erp_system": erp_system}) if not tc.erp_system else tc
@@ -271,7 +272,7 @@ def generate_notebook(
     variable_assignment = generate_config_variable_assignment(tc_with_erp)
     cdm_mapping = generate_cdm_mapping_section(tc_with_erp)
 
-    erp_schema = _get_erp_schema_safe(erp_system)
+    erp_schema = _get_erp_schema_safe(erp_system, headers=headers)
     custom_section = build_custom_section_prompt(tc_with_erp, erp_schema, user_description)
 
     notebook_code = template

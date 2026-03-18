@@ -102,16 +102,17 @@ def get_caller_workspace_client(headers: dict | None = None) -> WorkspaceClient:
         logger.info("-" * 60)
         return WorkspaceClient(token=token, auth_type="pat")
 
-    # Priority 3: No caller token, use app's own SP
+    # Priority 3: No caller token found — we are in production (local dev returned at line 62)
     logger.info("-" * 60)
-    logger.warning("AUTH: [FALLBACK - APP'S OWN SERVICE PRINCIPAL]")
-    logger.warning("AUTH: No caller token found in headers!")
-    logger.warning("AUTH: - No 'x-forwarded-access-token' (not from AI Playground)")
-    logger.warning("AUTH: - No 'Authorization: Bearer' (not M2M call)")
-    logger.warning("AUTH: Using app's own Service Principal as fallback")
-    logger.warning("AUTH: Actions will be performed as the APP, not the caller!")
+    logger.error("AUTH: [DENIED] No caller token found in production!")
+    logger.error("AUTH: - No 'x-forwarded-access-token' (not from AI Playground)")
+    logger.error("AUTH: - No 'Authorization: Bearer' (not M2M call)")
+    logger.error("AUTH: Refusing to fall back to app's Service Principal in production.")
     logger.info("-" * 60)
-    return WorkspaceClient()
+    raise PermissionError(
+        "Authentication required: no caller token found. "
+        "Provide x-forwarded-access-token (OBO) or Authorization Bearer header."
+    )
 
 
 # Backwards compatibility alias

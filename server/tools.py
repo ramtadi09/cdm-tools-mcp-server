@@ -24,6 +24,24 @@ from cdm_tools.models import (
     TransformConfig,
     TransformPreview,
 )
+from server.utils import header_store
+
+# Try to use FastMCP's built-in header injection; fall back to ContextVar
+try:
+    from fastmcp.server.dependencies import get_http_headers as _fmcp_get_headers
+except ImportError:
+    _fmcp_get_headers = None
+
+
+def _get_request_headers() -> dict:
+    """Get the current request's HTTP headers for OBO auth forwarding."""
+    if _fmcp_get_headers is not None:
+        try:
+            return _fmcp_get_headers() or {}
+        except Exception as e:
+            logging.getLogger(__name__).debug(f"get_http_headers() failed, falling back to header_store: {e}")
+    return header_store.get({})
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -52,6 +70,8 @@ def register_tools(mcp: FastMCP) -> None:
         logger.info(f"TOOL CALL: file_paths = {file_paths}")
         logger.info("=" * 70)
 
+        headers = _get_request_headers()
+
         files_info = []
         all_profiles = {}
         loaded_dfs = {}
@@ -59,7 +79,7 @@ def register_tools(mcp: FastMCP) -> None:
         for fp in file_paths:
             logger.info(f"TOOL: Processing file: {fp}")
             try:
-                path = resolve_file(fp)
+                path = resolve_file(fp, headers=headers)
             except FileNotFoundError:
                 logger.warning("TOOL: File not found, skipping: %s", fp)
                 continue
@@ -123,8 +143,10 @@ def register_tools(mcp: FastMCP) -> None:
         logger.info("TOOL CALL: lookup_erp_columns")
         logger.info("=" * 70)
 
+        headers = _get_request_headers()
+
         from cdm_tools.kb_queries import get_all_erp_columns
-        result = get_all_erp_columns()
+        result = get_all_erp_columns(headers=headers)
         logger.info(f"TOOL: lookup_erp_columns completed, found {len(result)} ERP systems")
         return json.dumps(result)
 
@@ -145,8 +167,10 @@ def register_tools(mcp: FastMCP) -> None:
         logger.info(f"TOOL CALL: cdm_name = '{cdm_name}'")
         logger.info("=" * 70)
 
+        headers = _get_request_headers()
+
         from cdm_tools.kb_queries import get_cdm_spec
-        result = get_cdm_spec(cdm_name)
+        result = get_cdm_spec(cdm_name, headers=headers)
         logger.info(f"TOOL: lookup_cdm_fields completed, found {len(result)} fields")
         return json.dumps(result)
 
@@ -166,8 +190,10 @@ def register_tools(mcp: FastMCP) -> None:
         logger.info(f"TOOL CALL: erp_system = '{erp_system}', cdm_name = '{cdm_name}'")
         logger.info("=" * 70)
 
+        headers = _get_request_headers()
+
         from cdm_tools.kb_queries import find_similar_mappings
-        result = find_similar_mappings(erp_system, cdm_name)
+        result = find_similar_mappings(erp_system, cdm_name, headers=headers)
         logger.info(f"TOOL: find_past_mappings completed, found {len(result)} mappings")
         return json.dumps(result)
 
@@ -189,6 +215,8 @@ def register_tools(mcp: FastMCP) -> None:
         logger.info(f"TOOL CALL: file_paths = {file_paths}")
         logger.info("=" * 70)
 
+        headers = _get_request_headers()
+
         from cdm_tools.transform_preview import apply_preview
 
         config_data = json.loads(config_json)
@@ -201,7 +229,7 @@ def register_tools(mcp: FastMCP) -> None:
         dfs = {}
         for fp in file_paths:
             try:
-                path = resolve_file(fp)
+                path = resolve_file(fp, headers=headers)
             except FileNotFoundError:
                 logger.warning("TOOL: File not found for preview, skipping: %s", fp)
                 continue
@@ -308,6 +336,8 @@ def register_tools(mcp: FastMCP) -> None:
         logger.info(f"TOOL CALL: notebook_title = '{notebook_title}'")
         logger.info("=" * 70)
 
+        headers = _get_request_headers()
+
         from cdm_tools.notebook_generator import generate_notebook
 
         config_data = json.loads(config_json)
@@ -316,7 +346,7 @@ def register_tools(mcp: FastMCP) -> None:
             if "transformation_variables" in config_data
             else TransformConfig.model_validate(config_data)
         )
-        result = generate_notebook(tc, erp_system, notebook_title, user_description)
+        result = generate_notebook(tc, erp_system, notebook_title, user_description, headers=headers)
         logger.info(f"TOOL: generate_transform_notebook completed")
         return result.model_dump_json()
 
@@ -348,6 +378,8 @@ def register_tools(mcp: FastMCP) -> None:
         logger.info(f"TOOL CALL: date_columns = {date_columns}")
         logger.info("=" * 70)
 
+        headers = _get_request_headers()
+
         from cdm_tools.validation_checks import run_all_checks
 
         rows = json.loads(preview_rows_json)
@@ -358,7 +390,7 @@ def register_tools(mcp: FastMCP) -> None:
         required_fields = []
         try:
             from cdm_tools.kb_queries import get_cdm_spec
-            cdm_fields = get_cdm_spec(cdm_name)
+            cdm_fields = get_cdm_spec(cdm_name, headers=headers)
             required_fields = list(cdm_fields.keys())
         except Exception as e:
             logger.warning(f"TOOL: Could not load CDM spec: {e}")
