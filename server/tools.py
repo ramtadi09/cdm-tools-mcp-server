@@ -73,8 +73,6 @@ def _log_auth_headers(headers: dict, _logger, source: str):
         _logger.info(f"HEADERS[{source}]: authorization not present")
 
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -87,13 +85,19 @@ def register_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     def analyze_files(file_paths: list[str]) -> str:
-        """Analyze uploaded data files: detect format, load, profile columns, classify as fact/dimension.
+        """[PHASE 1 - STEP 1] Start the CDM mapping workflow here. Analyzes ERP data files:
+        detects format (CSV/Excel/fixed-width), profiles all columns (types, nulls, samples),
+        and classifies files as fact or dimension tables.
+
+        Use this FIRST before any other CDM tool. The erp_system, column names, and file_paths
+        from this output are required by: lookup_erp_columns (Phase 1), find_past_mappings
+        (Phase 2), preview_transform (Phase 3), and lookup_pipeline_notebook (Phase 3).
 
         Args:
             file_paths: List of file paths to analyze (local or /Volumes/ paths).
 
         Returns:
-            JSON string of SchemaReport with file info, column profiles, and classification.
+            JSON string of SchemaReport with file info, column profiles, and fact/dimension classification.
         """
         logger.info("=" * 70)
         logger.info("TOOL CALL: analyze_files")
@@ -143,6 +147,11 @@ def register_tools(mcp: FastMCP) -> None:
             all_profiles[path.name] = profile_models
             loaded_dfs[path.name] = df
 
+        if not loaded_dfs:
+            error_msg = f"No files could be loaded from the provided paths: {file_paths}. Check that the paths exist and are accessible."
+            logger.error(f"TOOL: analyze_files failed — {error_msg}")
+            return json.dumps({"error": error_msg})
+
         logger.info(f"TOOL: Classifying {len(loaded_dfs)} files as fact/dimension...")
         classification = classify_files(loaded_dfs) if loaded_dfs else None
 
@@ -164,7 +173,11 @@ def register_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     def lookup_erp_columns() -> str:
-        """Look up known column names for all ERP systems from the knowledge base.
+        """[PHASE 1 - STEP 2] Get known column patterns for all ERP systems from the knowledge base.
+        Call this immediately after analyze_files to compare the file's actual columns against
+        known ERP patterns — this identifies the source ERP system (SAP, Oracle, MS Dynamics, etc.).
+
+        No arguments needed. Call after analyze_files, before lookup_cdm_fields.
 
         Returns:
             JSON dict mapping ERP system name to list of known columns.
@@ -184,7 +197,12 @@ def register_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     def lookup_cdm_fields(cdm_name: str) -> str:
-        """Look up CDM field specifications for a data model.
+        """[PHASE 2 - STEP 1] Get the target CDM field specifications for a data model.
+        Call this at the start of Phase 2 (after user confirms Phase 1 findings) to know
+        what fields the CDM model requires before proposing column mappings.
+
+        Call alongside find_past_mappings. Output used to build the mapping table and
+        later to construct TransformConfig in Phase 3.
 
         Args:
             cdm_name: CDM data model name (e.g., "general_ledger_detail").
@@ -206,14 +224,19 @@ def register_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     def find_past_mappings(erp_system: str, cdm_name: str) -> str:
-        """Find past transformation configs for similar ERP system and CDM model.
+        """[PHASE 2 - STEP 2] Find past transformation configs for this ERP + CDM combination.
+        Call alongside lookup_cdm_fields in Phase 2. Past mappings serve as a starting point
+        for the column mapping proposal — use them to increase confidence scores and reuse
+        proven column mappings.
+
+        Requires erp_system identified in Phase 1 (from analyze_files + lookup_erp_columns).
 
         Args:
-            erp_system: ERP system name (e.g., "Oracle", "SAP").
-            cdm_name: CDM data model name.
+            erp_system: ERP system name identified in Phase 1 (e.g., "Oracle", "SAP").
+            cdm_name: CDM data model name (e.g., "general_ledger_detail").
 
         Returns:
-            JSON list of past mapping configs.
+            JSON list of past mapping configs with source->CDM column mappings.
         """
         logger.info("=" * 70)
         logger.info("TOOL CALL: find_past_mappings")
@@ -231,14 +254,19 @@ def register_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     def preview_transform(config_json: str, file_paths: list[str]) -> str:
-        """Preview transformation results using pandas (no Spark needed).
+        """[PHASE 3 - STEP 1] Test the transformation config against actual files using pandas.
+        Call this after user confirms the Phase 2 column mappings. Build config_json from
+        the confirmed mappings (required_columns, date_columns, amount_columns, etc.).
+
+        The sample_rows in the output are required by validate_data in Phase 4.
+        Call lookup_pipeline_notebook immediately after this.
 
         Args:
-            config_json: JSON string of TransformConfig.
-            file_paths: List of file paths to transform.
+            config_json: JSON string of TransformConfig built from Phase 2 confirmed mappings.
+            file_paths: Same file paths used in analyze_files (Phase 1).
 
         Returns:
-            JSON string of TransformPreview with sample rows and warnings.
+            JSON string of TransformPreview with sample_rows (feed to validate_data) and warnings.
         """
         logger.info("=" * 70)
         logger.info("TOOL CALL: preview_transform")
@@ -266,6 +294,11 @@ def register_tools(mcp: FastMCP) -> None:
             fmt = detect_format(path)
             dfs[path.name] = load_file(path, fmt)
 
+        if not dfs:
+            error_msg = f"No files could be loaded from the provided paths: {file_paths}. Check that the paths exist and are accessible."
+            logger.error(f"TOOL: preview_transform failed — {error_msg}")
+            return json.dumps({"error": error_msg})
+
         preview_df, warnings = apply_preview(dfs, config)
 
         preview = TransformPreview(
@@ -280,14 +313,19 @@ def register_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     def lookup_pipeline_notebook(cdm_name: str, erp_system: str) -> str:
-        """Search pipeline_notebooks.json for a matching transform notebook.
+        """[PHASE 3 - STEP 2] Search for an existing transform notebook for this ERP + CDM pair.
+        Call immediately after preview_transform in Phase 3.
+
+        If a notebook IS found: present the notebook_path to the user.
+        If NO notebook is found (empty list): ask the user for additional context,
+        then call generate_transform_notebook instead.
 
         Args:
-            cdm_name: CDM data model name.
-            erp_system: ERP system name.
+            cdm_name: CDM data model name (same as used in Phase 2).
+            erp_system: ERP system name identified in Phase 1.
 
         Returns:
-            JSON with matching notebook info or empty list.
+            JSON with matching notebook info (notebook_path, etc.) or empty list if not found.
         """
         logger.info("=" * 70)
         logger.info("TOOL CALL: lookup_pipeline_notebook")
@@ -317,16 +355,20 @@ def register_tools(mcp: FastMCP) -> None:
     def setup_databricks_job(
         notebook_path: str, cluster_id: str, job_name: str, config_json: str,
     ) -> str:
-        """Create a Databricks Job to run a transform notebook (does NOT execute it).
+        """[OPTIONAL - Final Step] Create a Databricks Job to schedule the transform notebook.
+        Only call this if the user explicitly wants to schedule or run the transformation.
+        Does NOT execute the job — only creates it. Ask the user for cluster_id before calling.
+
+        Requires notebook_path from lookup_pipeline_notebook or generate_transform_notebook (Phase 3).
 
         Args:
-            notebook_path: Workspace path to the transform notebook.
-            cluster_id: Cluster ID to run on.
-            job_name: Human-readable job name.
-            config_json: JSON string of the transform config to pass as parameters.
+            notebook_path: Workspace path from lookup_pipeline_notebook or generate_transform_notebook.
+            cluster_id: Ask the user to provide their cluster ID.
+            job_name: Suggest a descriptive name e.g. "CDM_{erp_system}_{cdm_name}_transform".
+            config_json: The TransformConfig JSON string from Phase 3.
 
         Returns:
-            JSON string of JobSetupResult with job_id and URL.
+            JSON string of JobSetupResult with job_id and job URL.
         """
         logger.info("=" * 70)
         logger.info("TOOL CALL: setup_databricks_job")
@@ -349,16 +391,20 @@ def register_tools(mcp: FastMCP) -> None:
         notebook_title: str,
         user_description: str = "",
     ) -> str:
-        """Generate a transform notebook from template when no existing notebook is found.
+        """[PHASE 3 - STEP 3, conditional] Generate a new transform notebook from template.
+        Only call this when lookup_pipeline_notebook returns an empty list (no existing notebook).
+        Ask the user for any additional domain context before calling.
+
+        The notebook_path in the output is required by setup_databricks_job (optional final step).
 
         Args:
-            config_json: JSON string of TransformConfig.
-            erp_system: ERP system name.
-            notebook_title: Descriptive title for the notebook.
-            user_description: Optional user-provided description with domain context.
+            config_json: JSON string of TransformConfig from Phase 3.
+            erp_system: ERP system name identified in Phase 1.
+            notebook_title: Descriptive title, e.g. "SAP_GL_to_CDM_GeneralLedger_transform".
+            user_description: Optional domain context from the user (business rules, special handling).
 
         Returns:
-            JSON string of NotebookGenerationResult with full notebook code.
+            JSON string of NotebookGenerationResult with notebook_path and full notebook code.
         """
         logger.info("=" * 70)
         logger.info("TOOL CALL: generate_transform_notebook")
@@ -390,17 +436,22 @@ def register_tools(mcp: FastMCP) -> None:
         debit_col: str = "",
         credit_col: str = "",
     ) -> str:
-        """Run 5 rule-based validation checks on preview data.
+        """[PHASE 4 - FINAL STEP] Run 5 quality checks on the transformed data.
+        Call this after user confirms Phase 3 preview results. Use the sample_rows
+        from preview_transform output as preview_rows_json.
+
+        Runs: completeness, type consistency, null ratios, date range, debit/credit balance.
+        This is the last required phase — summarize results and flag any issues.
 
         Args:
-            preview_rows_json: JSON string of list of row dicts (from preview).
-            cdm_name: CDM model name to look up required fields.
-            date_columns: Date column names to validate.
-            debit_col: Debit column name for balance check.
-            credit_col: Credit column name for balance check.
+            preview_rows_json: JSON string of sample_rows from preview_transform output.
+            cdm_name: CDM model name (same as used throughout the workflow).
+            date_columns: Date column names identified during the workflow.
+            debit_col: Debit column name if present (for balance check).
+            credit_col: Credit column name if present (for balance check).
 
         Returns:
-            JSON string of ValidationReport.
+            JSON string of ValidationReport with pass/fail for all 5 checks.
         """
         logger.info("=" * 70)
         logger.info("TOOL CALL: validate_data")
@@ -412,7 +463,13 @@ def register_tools(mcp: FastMCP) -> None:
 
         from cdm_tools.validation_checks import run_all_checks
 
-        rows = json.loads(preview_rows_json)
+        try:
+            rows = json.loads(preview_rows_json)
+        except json.JSONDecodeError as e:
+            error_msg = f"preview_rows_json is not valid JSON: {e}. Pass the sample_rows field directly from preview_transform output."
+            logger.error(f"TOOL: validate_data failed — {error_msg}")
+            return json.dumps({"error": error_msg})
+
         df = pd.DataFrame(rows)
         logger.info(f"TOOL: Validating {len(df)} rows")
 

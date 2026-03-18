@@ -80,7 +80,9 @@ async def capture_headers(request: Request, call_next):
     # Log auth-related headers (masked)
     auth_headers_found = []
     if "x-forwarded-access-token" in headers_dict:
-        auth_headers_found.append("x-forwarded-access-token (AI Playground User)")
+        auth_headers_found.append("x-forwarded-access-token (AI Playground/Genie User)")
+    if "x-databricks-user-token" in headers_dict:
+        auth_headers_found.append("x-databricks-user-token (cross-app OBO)")
     if "authorization" in headers_dict:
         auth_headers_found.append("Authorization (M2M or direct call)")
 
