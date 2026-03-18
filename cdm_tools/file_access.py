@@ -33,11 +33,18 @@ def _get_temp_dir() -> str:
     return _temp_dir
 
 
-def resolve_file(file_path: str) -> Path:
-    """Resolve a file path, downloading from Volume if needed."""
+def resolve_file(file_path: str, headers: dict | None = None) -> Path:
+    """Resolve a file path, downloading from Volume if needed.
+
+    Args:
+        file_path: Local path or /Volumes/ path to resolve.
+        headers: Request headers for authentication. Pass explicitly when
+                 ContextVar may not be available (e.g., in FastMCP tools).
+    """
     logger.info("=" * 60)
     logger.info(f"FILE_ACCESS: resolve_file called")
     logger.info(f"FILE_ACCESS: Path: {file_path}")
+    logger.info(f"FILE_ACCESS: Headers provided: {headers is not None}")
     logger.info("=" * 60)
 
     local = Path(file_path)
@@ -50,7 +57,7 @@ def resolve_file(file_path: str) -> Path:
         logger.info(f"FILE_ACCESS: Detected Unity Catalog Volume path")
         if _on_databricks_app():
             logger.info(f"FILE_ACCESS: Running as Databricks App - will download from Volume")
-            return _download_from_volume(file_path)
+            return _download_from_volume(file_path, headers=headers)
         else:
             logger.warning(f"FILE_ACCESS: Not running as Databricks App - cannot access Volume")
 
@@ -58,21 +65,27 @@ def resolve_file(file_path: str) -> Path:
     raise FileNotFoundError(f"File not found: {file_path}")
 
 
-def _download_from_volume(volume_path: str) -> Path:
+def _download_from_volume(volume_path: str, headers: dict | None = None) -> Path:
     """Download a file from a UC Volume to a local temp directory.
 
     Uses caller's identity (OBO) so Volume permissions are enforced.
     Requires the 'files.files' OAuth scope.
+
+    Args:
+        volume_path: The /Volumes/... path to download.
+        headers: Request headers for authentication. Pass explicitly when
+                 ContextVar may not be available (e.g., in FastMCP tools).
     """
     logger.info("-" * 60)
     logger.info(f"FILE_ACCESS: Downloading from Volume")
     logger.info(f"FILE_ACCESS: Volume path: {volume_path}")
+    logger.info(f"FILE_ACCESS: Headers provided: {headers is not None}")
     logger.info("-" * 60)
 
     from server.utils import get_caller_workspace_client
 
     logger.info("FILE_ACCESS: Getting WorkspaceClient with CALLER's identity...")
-    w = get_caller_workspace_client()
+    w = get_caller_workspace_client(headers=headers)
 
     filename = Path(volume_path).name
     local_path = Path(_get_temp_dir()) / filename

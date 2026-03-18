@@ -19,34 +19,51 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def _get_client() -> WorkspaceClient:
+def _get_client(headers: dict | None = None) -> WorkspaceClient:
     """Get WorkspaceClient using caller's identity (OBO) for KB access.
 
     Changed from app's SP to OBO because user may not be able to grant
     USE CATALOG permission to the app's SP.
+
+    Args:
+        headers: Request headers for authentication. Pass explicitly when
+                 ContextVar may not be available (e.g., in FastMCP tools).
     """
     logger.info("KB_QUERIES: Getting WorkspaceClient for KB access")
+    logger.info(f"KB_QUERIES: Headers provided: {headers is not None}")
 
     if os.environ.get("DATABRICKS_APP_NAME"):
         logger.info("KB_QUERIES: Running as Databricks App - using caller's identity (OBO)")
         from server.utils import get_caller_workspace_client
-        return get_caller_workspace_client()
+        return get_caller_workspace_client(headers=headers)
 
     profile = config.DATABRICKS_CONFIG_PROFILE
     logger.info(f"KB_QUERIES: Local dev - using profile: {profile}")
     return WorkspaceClient(profile=profile)
 
 
-def _execute_sql(sql: str, parameters: list[StatementParameterListItem] | None = None) -> list[dict]:
-    """Execute SQL via Databricks SDK statement execution and return rows as dicts."""
+def _execute_sql(
+    sql: str,
+    parameters: list[StatementParameterListItem] | None = None,
+    headers: dict | None = None,
+) -> list[dict]:
+    """Execute SQL via Databricks SDK statement execution and return rows as dicts.
+
+    Args:
+        sql: The SQL statement to execute.
+        parameters: Optional list of query parameters.
+        headers: Request headers for authentication. Pass explicitly when
+                 ContextVar may not be available (e.g., in FastMCP tools).
+    """
     logger.info("=" * 60)
     logger.info("KB_QUERIES: Executing SQL query")
     logger.info(f"KB_QUERIES: SQL: {sql[:100]}..." if len(sql) > 100 else f"KB_QUERIES: SQL: {sql}")
     if parameters:
         logger.info(f"KB_QUERIES: Parameters: {[(p.name, p.value) for p in parameters]}")
+    logger.info(f"KB_QUERIES: Headers provided: {headers is not None}")
     logger.info("=" * 60)
 
-    w = _get_client()
+    w = _get_client(headers=headers)
 
     warehouse_id = os.environ.get("CDM_WAREHOUSE_ID")
     if not warehouse_id:
@@ -88,8 +105,13 @@ def _execute_sql(sql: str, parameters: list[StatementParameterListItem] | None =
     return rows
 
 
-def get_cdm_spec(cdm_name: str) -> dict:
-    """Get CDM field specifications for a given CDM data model."""
+def get_cdm_spec(cdm_name: str, headers: dict | None = None) -> dict:
+    """Get CDM field specifications for a given CDM data model.
+
+    Args:
+        cdm_name: The CDM model name to look up.
+        headers: Request headers for authentication (optional).
+    """
     logger.info("-" * 60)
     logger.info(f"KB_QUERIES: get_cdm_spec(cdm_name='{cdm_name}')")
     logger.info(f"KB_QUERIES: Table: {config.CDM_DEFINITIONS_TABLE}")
@@ -98,6 +120,7 @@ def get_cdm_spec(cdm_name: str) -> dict:
     rows = _execute_sql(
         f"SELECT fields_json FROM {config.CDM_DEFINITIONS_TABLE} WHERE cdm_name = :cdm_name",
         parameters=[StatementParameterListItem(name="cdm_name", value=cdm_name)],
+        headers=headers,
     )
     if not rows:
         logger.warning(f"KB_QUERIES: No CDM spec found for '{cdm_name}'")
@@ -108,8 +131,13 @@ def get_cdm_spec(cdm_name: str) -> dict:
     return result
 
 
-def get_erp_schema(erp_system: str) -> dict:
-    """Get ERP schema info including columns, patterns, and DC indicator specs."""
+def get_erp_schema(erp_system: str, headers: dict | None = None) -> dict:
+    """Get ERP schema info including columns, patterns, and DC indicator specs.
+
+    Args:
+        erp_system: The ERP system name to look up.
+        headers: Request headers for authentication (optional).
+    """
     logger.info("-" * 60)
     logger.info(f"KB_QUERIES: get_erp_schema(erp_system='{erp_system}')")
     logger.info(f"KB_QUERIES: Table: {config.ERP_SCHEMAS_TABLE}")
@@ -118,6 +146,7 @@ def get_erp_schema(erp_system: str) -> dict:
     rows = _execute_sql(
         f"SELECT * FROM {config.ERP_SCHEMAS_TABLE} WHERE erp_system = :erp_system",
         parameters=[StatementParameterListItem(name="erp_system", value=erp_system)],
+        headers=headers,
     )
     if not rows:
         logger.warning(f"KB_QUERIES: No ERP schema found for '{erp_system}'")
@@ -135,15 +164,20 @@ def get_erp_schema(erp_system: str) -> dict:
     }
 
 
-def get_all_erp_columns() -> dict[str, list[str]]:
-    """Get all ERP systems and their known columns."""
+def get_all_erp_columns(headers: dict | None = None) -> dict[str, list[str]]:
+    """Get all ERP systems and their known columns.
+
+    Args:
+        headers: Request headers for authentication (optional).
+    """
     logger.info("-" * 60)
     logger.info(f"KB_QUERIES: get_all_erp_columns()")
     logger.info(f"KB_QUERIES: Table: {config.ERP_SCHEMAS_TABLE}")
     logger.info("-" * 60)
 
     rows = _execute_sql(
-        f"SELECT erp_system, known_columns_json FROM {config.ERP_SCHEMAS_TABLE}"
+        f"SELECT erp_system, known_columns_json FROM {config.ERP_SCHEMAS_TABLE}",
+        headers=headers,
     )
 
     result = {row["erp_system"]: json.loads(row["known_columns_json"]) for row in rows}
@@ -151,8 +185,14 @@ def get_all_erp_columns() -> dict[str, list[str]]:
     return result
 
 
-def find_similar_mappings(erp_system: str, cdm_name: str) -> list[dict]:
-    """Find past mapping configs for similar ERP system and CDM model."""
+def find_similar_mappings(erp_system: str, cdm_name: str, headers: dict | None = None) -> list[dict]:
+    """Find past mapping configs for similar ERP system and CDM model.
+
+    Args:
+        erp_system: The ERP system name.
+        cdm_name: The CDM model name.
+        headers: Request headers for authentication (optional).
+    """
     logger.info("-" * 60)
     logger.info(f"KB_QUERIES: find_similar_mappings(erp_system='{erp_system}', cdm_name='{cdm_name}')")
     logger.info(f"KB_QUERIES: Table: {config.MAPPING_HISTORY_TABLE}")
@@ -169,6 +209,7 @@ def find_similar_mappings(erp_system: str, cdm_name: str) -> list[dict]:
             StatementParameterListItem(name="cdm_name", value=cdm_name),
             StatementParameterListItem(name="erp_pattern", value=erp_pattern),
         ],
+        headers=headers,
     )
 
     results = []

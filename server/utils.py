@@ -32,13 +32,17 @@ def get_workspace_client() -> WorkspaceClient:
     return WorkspaceClient()
 
 
-def get_caller_workspace_client() -> WorkspaceClient:
+def get_caller_workspace_client(headers: dict | None = None) -> WorkspaceClient:
     """Get a WorkspaceClient authenticated as the caller.
 
     Supports three scenarios:
     1. Databricks AI Playground: Uses x-forwarded-access-token header
     2. M2M Service Principal: Uses Authorization Bearer token
     3. Local development: Falls back to default SDK auth
+
+    Args:
+        headers: Request headers dict. If None, falls back to header_store ContextVar.
+                 Pass explicitly when ContextVar may not be available (e.g., in FastMCP tools).
 
     Use this for actions that should run as the caller (file access, job creation).
     """
@@ -49,6 +53,7 @@ def get_caller_workspace_client() -> WorkspaceClient:
     logger.info("AUTH: get_caller_workspace_client() called")
     logger.info(f"AUTH: Running as Databricks App: {is_databricks_app}")
     logger.info(f"AUTH: App name: {app_name}")
+    logger.info(f"AUTH: Headers provided explicitly: {headers is not None}")
     logger.info("=" * 60)
 
     if not is_databricks_app:
@@ -56,7 +61,12 @@ def get_caller_workspace_client() -> WorkspaceClient:
         logger.info("AUTH: [LOCAL DEV] Using default SDK auth (CLI profile or env vars)")
         return WorkspaceClient()
 
-    headers = header_store.get({})
+    # Use provided headers or fall back to ContextVar (for backward compat)
+    if headers is None:
+        headers = header_store.get({})
+        logger.info("AUTH: Using headers from ContextVar (header_store)")
+    else:
+        logger.info("AUTH: Using explicitly provided headers")
 
     # Log all headers (mask sensitive values)
     logger.info("AUTH: Request headers received:")
