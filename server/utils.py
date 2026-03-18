@@ -77,6 +77,11 @@ def get_caller_workspace_client(headers: dict | None = None) -> WorkspaceClient:
         else:
             logger.info(f"AUTH:   {key}: {value}")
 
+    # Resolve host from environment (needed for explicit WorkspaceClient creation)
+    host = os.environ.get("DATABRICKS_HOST", "")
+    if host and not host.startswith("http"):
+        host = f"https://{host}"
+
     # Priority 1: Databricks UI injects user token via this header (OBO)
     token = headers.get("x-forwarded-access-token")
     if token:
@@ -86,8 +91,12 @@ def get_caller_workspace_client(headers: dict | None = None) -> WorkspaceClient:
         logger.info("AUTH: This is a USER accessing via AI Playground")
         logger.info("AUTH: MCP will act with USER's identity and permissions")
         logger.info(f"AUTH: Token preview: {token[:20]}...{token[-10:]}")
+        logger.info(f"AUTH: Host: {host}")
         logger.info("-" * 60)
-        return WorkspaceClient(token=token, auth_type="pat")
+        # Explicitly set host and token ONLY — prevents SDK from picking up
+        # DATABRICKS_CLIENT_ID/SECRET from environment which would override
+        # the OBO token with the app's service principal credentials.
+        return WorkspaceClient(host=host, token=token)
 
     # Priority 2: M2M caller sends Bearer token in Authorization header
     auth_header = headers.get("authorization", "")
@@ -100,7 +109,7 @@ def get_caller_workspace_client(headers: dict | None = None) -> WorkspaceClient:
         logger.info("AUTH: MCP will act with CALLER APP's Service Principal")
         logger.info(f"AUTH: Token preview: {token[:20]}...{token[-10:]}")
         logger.info("-" * 60)
-        return WorkspaceClient(token=token, auth_type="pat")
+        return WorkspaceClient(host=host, token=token)
 
     # Priority 3: No caller token found — we are in production (local dev returned at line 62)
     logger.info("-" * 60)
