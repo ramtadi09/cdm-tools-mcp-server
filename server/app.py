@@ -24,7 +24,7 @@ logger.info("=" * 70)
 logger.info("MCP SERVER: Initializing CDM Tools MCP Server")
 logger.info("=" * 70)
 
-mcp_server = FastMCP(name="cdm-tools-mcp-server", stateless_http=True)
+mcp_server = FastMCP(name="cdm-tools-mcp-server")
 
 # Register all 9 CDM tools
 logger.info("MCP SERVER: Registering CDM tools...")
@@ -32,7 +32,9 @@ register_tools(mcp_server)
 logger.info("MCP SERVER: Tools registered successfully")
 
 # Convert to streamable-HTTP ASGI app (serves at /mcp)
-mcp_app = mcp_server.http_app()
+# stateless_http=True: each request handled independently, no session ID
+# required — fixes 400 errors when multiple workers handle concurrent requests
+mcp_app = mcp_server.http_app(stateless_http=True)
 
 # Separate FastAPI for non-MCP endpoints
 api = FastAPI(title="CDM Tools MCP Server", version="0.1.0", lifespan=mcp_app.lifespan)
