@@ -24,7 +24,7 @@ logger.info("=" * 70)
 logger.info("MCP SERVER: Initializing CDM Tools MCP Server")
 logger.info("=" * 70)
 
-mcp_server = FastMCP(name="cdm-tools-mcp-server")
+mcp_server = FastMCP(name="cdm-tools-mcp-server", stateless_http=True)
 
 # Register all 9 CDM tools
 logger.info("MCP SERVER: Registering CDM tools...")
