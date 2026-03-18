@@ -35,12 +35,42 @@ except ImportError:
 
 def _get_request_headers() -> dict:
     """Get the current request's HTTP headers for OBO auth forwarding."""
+    _logger = logging.getLogger(__name__)
+
+    # Try FastMCP dependency injection first
     if _fmcp_get_headers is not None:
         try:
-            return _fmcp_get_headers() or {}
+            hdrs = _fmcp_get_headers() or {}
+            if hdrs:
+                _logger.info(f"HEADERS: Got {len(hdrs)} headers from FastMCP get_http_headers()")
+                _log_auth_headers(hdrs, _logger, "FastMCP")
+                return hdrs
+            _logger.info("HEADERS: FastMCP get_http_headers() returned empty, trying header_store")
         except Exception as e:
-            logging.getLogger(__name__).debug(f"get_http_headers() failed, falling back to header_store: {e}")
-    return header_store.get({})
+            _logger.warning(f"HEADERS: FastMCP get_http_headers() failed: {e}, trying header_store")
+
+    # Fall back to ContextVar set by middleware
+    hdrs = header_store.get({})
+    if hdrs:
+        _logger.info(f"HEADERS: Got {len(hdrs)} headers from header_store ContextVar")
+        _log_auth_headers(hdrs, _logger, "header_store")
+    else:
+        _logger.warning("HEADERS: header_store ContextVar is EMPTY — no auth headers available!")
+    return hdrs
+
+
+def _log_auth_headers(headers: dict, _logger, source: str):
+    """Log which auth headers are present (values masked)."""
+    obo = headers.get("x-forwarded-access-token")
+    auth = headers.get("authorization", "")
+    if obo:
+        _logger.info(f"HEADERS[{source}]: x-forwarded-access-token PRESENT (len={len(obo)})")
+    else:
+        _logger.warning(f"HEADERS[{source}]: x-forwarded-access-token MISSING")
+    if auth:
+        _logger.info(f"HEADERS[{source}]: authorization PRESENT ({auth[:15]}...)")
+    else:
+        _logger.info(f"HEADERS[{source}]: authorization not present")
 
 
 # Configure logging

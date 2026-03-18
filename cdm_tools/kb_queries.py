@@ -29,11 +29,18 @@ def _get_client(headers: dict | None = None) -> WorkspaceClient:
         headers: Request headers for authentication. Pass explicitly when
                  ContextVar may not be available (e.g., in FastMCP tools).
     """
-    logger.info("KB_QUERIES: Getting WorkspaceClient for KB access")
-    logger.info(f"KB_QUERIES: Headers provided: {headers is not None}")
+    has_headers = headers is not None and len(headers) > 0
+    has_obo = bool(headers.get("x-forwarded-access-token")) if headers else False
+    has_auth = bool(headers.get("authorization")) if headers else False
+    logger.info(f"KB_QUERIES: Getting WorkspaceClient | headers={has_headers}, obo_token={has_obo}, auth_header={has_auth}")
 
     if os.environ.get("DATABRICKS_APP_NAME"):
-        logger.info("KB_QUERIES: Running as Databricks App - using caller's identity (OBO)")
+        if has_obo:
+            logger.info("KB_QUERIES: Running as Databricks App — using caller's OBO token")
+        elif has_auth:
+            logger.info("KB_QUERIES: Running as Databricks App — using Authorization Bearer token")
+        else:
+            logger.warning("KB_QUERIES: Running as Databricks App — NO caller token in headers!")
         from server.utils import get_caller_workspace_client
         return get_caller_workspace_client(headers=headers)
 
